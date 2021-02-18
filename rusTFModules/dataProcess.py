@@ -31,5 +31,15 @@ def csvToData(trainDataPath, valDataPath, paraDict):
                                                            num_epochs=paraDict['epochTime'])
     trainDataset = dataBatches.map(pack_feature_vector)
     valDataset = valDataBatches.map(pack_feature_vector)
-    # print ('return')
-    return {"trainDatase": trainDataset, "valDataset": valDataset}data
+    trainDataNum = 0
+    valDataNum = 0
+    for e in trainDataset.as_numpy_iterator():
+        trainDataNum += len(e[0])
+        
+    for e in valDataset.as_numpy_iterator():
+        valDataNum += len(e[0])
+
+    return {"trainDatase": trainDataset, 
+            "valDataset": valDataset, 
+            'trainDataNum': trainDataNum,
+            'valDataNum': valDataNum}

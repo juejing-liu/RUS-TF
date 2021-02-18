@@ -13,11 +13,11 @@ for device in gpu_devices:
 
 def buildDense(node, activation, input_shape):
     if (activation != None) and (input_shape != None):
-        layer = keras.layers.Dense(node=node, activation=activation, input_shape=input_shape)
+        layer = keras.layers.Dense(node, activation=activation, input_shape=input_shape)
     elif(activation != None) and (input_shape == None):
-        layer = keras.layers.Dense(node=node, activation=activation)
+        layer = keras.layers.Dense(node, activation=activation)
     else:
-        layer = keras.layers.Dense(node=node)
+        layer = keras.layers.Dense(node)
          
     return layer
 
@@ -26,11 +26,11 @@ def buildDropout(drop):
     return layer
 
 def buildOptimizer(optiPara):
-    name = optiPara['name']
+    name = optiPara['optName']
     para = optiPara['parameters']
     optimizer = getattr(tf.optimizers, name)
     optimizer = optimizer(para)
     return optimizer
 
-def buildModel():
+# def buildModel():
 

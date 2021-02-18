@@ -88,4 +88,4 @@ history = model.fit(train_dataset, validation_data=val_dataset, epochs=EPOCHS, v
 # loss = history.history['loss']
 # val_loss = history.history['val_loss']
 
-epochs_range = range(EPOCHS)
+# epochs_range = range(EPOCHS)

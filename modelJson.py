@@ -10,7 +10,8 @@ import json
             {'layerName': 'dense', 'node': 1, 'activation': None, 'input_shape':None}
            ],
    'optimize':{'optName':'RMSprop', 'parameters':0.001},
-   'callBacks':{'callName':'EarlyStopping', 'patience': 10},
-   'compilePara': {'loss':"mean_squared_error", 'metrics':['mae', 'mse']}
+   'callBacks':[{'callName':'EarlyStopping', 'monitor': 'loss', 'patience': 10}],
+   'compilePara': {'loss':"mean_squared_error", 'metrics':['mae', 'mse']},
+   'epochs':500
 }
 ]
