@@ -8,11 +8,13 @@ import numpy as np
 from rusTFModules import dataProcess
 import json
 from rusTFModules import modelFunc
+from rusTFModules import saveFiles
+from rusTFModules import rusPreprocess
 
-gpu_devices = tf.config.experimental.list_physical_devices('GPU')
-for device in gpu_devices:
-    tf.config.experimental.set_memory_growth(device, True)
-tf.random.set_seed(42)
+# gpu_devices = tf.config.experimental.list_physical_devices('GPU')
+# for device in gpu_devices:
+#     tf.config.experimental.set_memory_growth(device, True)
+# tf.random.set_seed(42)
 
 
 class dataObj():
@@ -31,9 +33,9 @@ class dataObj():
     def importData(self):
         # print ('begin')
         dataDict = self.processFunc(self.trainDataPath, self.valDataPath, self.paraDict)
-        self.trainDataSet = dataDict["trainDatase"]
+        self.trainDataSet = dataDict["trainDataset"]
         self.valDataSet = dataDict["valDataset"]
-        self.trainDataSet = self.trainDataSet.repeat(self.paraDict['trianRepeat'])
+        # self.trainDataSet = self.trainDataSet.repeat(self.paraDict['trianRepeat'])
         self.trainDataNum = dataDict['trainDataNum']
         self.valDataNum = dataDict['valDataNum']
         # print(self.trainDataNum)
@@ -56,16 +58,16 @@ class mLearning():
         for l in self.modelPara['layers']:
             
             if l['layerName'] == 'dense':
-                print(l)
+
                 layer = modelFunc.buildDense(node=l['node'],
-                                             activation=l['activation'], 
-                                             input_shape=l['input_shape']
-                )
+                                                activation=l['activation'], 
+                                                input_shape=l['input_shape']
+                    )
 
             elif l['layerName'] == 'Dropout':
                 layer = modelFunc.buildDropout(l['drop']
                 )
-            print(layer)
+            # print(layer)
             self.model.add(layer)
         
     def setOptimizer(self):
@@ -89,22 +91,31 @@ class mLearning():
         self.model.summary()
         
     def modelFit(self):
-        self.history = self.model.fit(self.dataObj.trainDataSet, 
+        # print(self.dataObj.trainDataSet['x'])
+        # print(self.dataObj.trainDataSet['y'])
+        print(self.dataObj.valDataSet)
+        self.history = self.model.fit(self.dataObj.trainDataSet,
                                       validation_data=self.dataObj.valDataSet,
                                       epochs=self.modelPara['epochs'],
                                     #   callbacks=self.callBack,
-                                      validation_steps=int(np.ceil(self.dataObj.valDataNum/self.dataObj.paraDict['batchSize'])))
+                                      steps_per_epoch=(self.dataObj.trainDataNum//self.dataObj.paraDict["batchSize"]),
+                                      validation_steps=(self.dataObj.valDataNum//self.dataObj.paraDict["batchSize"]))
     
     def fitHistory(self):
-        df = pd.DataFrame()
+        his = self.history.history.items()
+        name = self.modelPara['name']
+        saveFiles.saveHistory(name, his)
+        # df = pd.DataFrame()
 
-        for f, v in self.history.history.items():
-            df[f] = v
-        df.to_csv('./result/{0}.csv'.format(self.modelPara['name']))
+        # for f, v in self.history.history.items():
+        #     df[f] = v
+        # df.to_csv('./result/{0}.csv'.format(self.modelPara['name']))
     
     def saveModel(self):
-        os.mkdir('./result/{0}'.format(self.modelPara['name']))
-        self.model.save('./result/{0}'.format(self.modelPara['name']))
+        name = self.modelPara['name']
+        saveFiles.modelToDisk(name,self.model)
+        # os.mkdir('./result/{0}'.format(self.modelPara['name']))
+        # self.model.save('./result/{0}'.format(self.modelPara['name']))
 # cwd = os.getcwd()
 # print(cwd)
 
@@ -114,22 +125,32 @@ with open('./rusTFModules/dataProcPara.json', 'r') as f:
 
 
 test1 = dataObj(name='test', 
-                processFunc=dataProcess.csvToData,
-                trainDataPath='./examples/MLenthalpy/data.csv',
-                valDataPath='./examples/MLenthalpy/val_data.csv',
+                processFunc=rusPreprocess.rusDataProcess,
+                trainDataPath='./rawData/Train/',
+                valDataPath='./rawData/Val/',
                 paraDict=paraDict)
 
 test1.importData()
+# print(test1.trainDataSet)
+# print(test1.trainDataNum)
+# print(test1.valDataSet)
+# print(test1.valDataNum)
+# print(len(test1.trainDataSet.keys()))
 
 
-modelList = [{'layers':[{'layerName': 'dense', 'node': 16, 'activation': 'relu', 'input_shape':[1]},
-            {'layerName': 'dense', 'node': 1, 'activation': None, 'input_shape':None}
-           ],
+# trainDataSet = tf.data.experimental.load('./rawData/trainDataSet/', tf.TensorSpec(shape=(32,50), dtype=tf.float64))
+# print(trainDataSet)
+# valDataSet = tf.data.experimental.load('./rawData/valDataSet/', tf.TensorSpec(shape=(32,50), dtype=tf.float64))
+
+modelList = [{'layers':[{'layerName': 'dense', 'node': 256, 'activation': 'relu', 'input_shape':[50]},
+                        {'layerName': 'dense', 'node': 256, 'activation': 'relu', 'input_shape':None},        
+                        {'layerName': 'dense', 'node': 2, 'activation': None, 'input_shape':None}
+                        ],
    'optimize':{'optName':'RMSprop', 'parameters':0.001},
    'callBacks':[{'callName':'EarlyStopping', 'monitor': 'loss', 'patience': 10}],
-   'compilePara': {'loss':"mean_squared_error", 'metrics':['mae', 'mse']},
-   'epochs':512,
-   'name': 'test3'
+   'compilePara': {'loss':"mean_squared_error", 'metrics':[ 'mae', 'mse']},
+   'epochs':2048,
+   'name': 'test2'
 }
 ]
 
