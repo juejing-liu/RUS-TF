@@ -28,8 +28,12 @@ def buildDropout(drop):
 def buildOptimizer(optiPara):
     name = optiPara['optName']
     para = optiPara['parameters']
-    optimizer = getattr(tf.optimizers, name)
-    optimizer = optimizer(para)
+    optimizer = getattr(keras.optimizers, name)
+    optimizer = optimizer(**optiPara['parameters'])
+    # if para != None:
+    #     optimizer = optimizer(para)
+    # else:
+    #     optimizer = optimizer()
     return optimizer
 
 # def buildModel():

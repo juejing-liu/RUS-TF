@@ -19,10 +19,11 @@ from rusTFModules import rusPreprocess
 
 class dataObj():
 
-    def __init__(self, name, processFunc, trainDataPath, valDataPath, paraDict):
+    def __init__(self, name, processFunc, trainDataPath, valDataPath, paraDict, standardFile):
         self.name = name
         self.trainDataSet = None
         self.valDataSet = None
+        self.standardFile = standardFile
         self.processFunc = processFunc
         self.trainDataPath = trainDataPath
         self.valDataPath = valDataPath
@@ -32,7 +33,7 @@ class dataObj():
 
     def importData(self):
         # print ('begin')
-        dataDict = self.processFunc(self.trainDataPath, self.valDataPath, self.paraDict)
+        dataDict = self.processFunc(self.trainDataPath, self.valDataPath, self.paraDict, self.standardFile)
         self.trainDataSet = dataDict["trainDataset"]
         self.valDataSet = dataDict["valDataset"]
         # self.trainDataSet = self.trainDataSet.repeat(self.paraDict['trianRepeat'])
@@ -128,6 +129,7 @@ test1 = dataObj(name='test',
                 processFunc=rusPreprocess.rusDataProcess,
                 trainDataPath='./rawData/Train/',
                 valDataPath='./rawData/Val/',
+                standardFile='./rawData/Standard.txt',
                 paraDict=paraDict)
 
 test1.importData()
@@ -142,15 +144,18 @@ test1.importData()
 # print(trainDataSet)
 # valDataSet = tf.data.experimental.load('./rawData/valDataSet/', tf.TensorSpec(shape=(32,50), dtype=tf.float64))
 
-modelList = [{'layers':[{'layerName': 'dense', 'node': 256, 'activation': 'relu', 'input_shape':[50]},
-                        {'layerName': 'dense', 'node': 256, 'activation': 'relu', 'input_shape':None},        
+modelList = [{'layers':[{'layerName': 'dense', 'node': 1024, 'activation': 'relu', 'input_shape':[256]},
+                        {'layerName': 'dense', 'node': 512, 'activation': 'relu', 'input_shape':None},
+                        {'layerName': 'dense', 'node': 256, 'activation': 'relu', 'input_shape':None},
+                        # {'layerName': 'dense', 'node': 1024, 'activation': 'relu', 'input_shape':None},        
                         {'layerName': 'dense', 'node': 2, 'activation': None, 'input_shape':None}
                         ],
-   'optimize':{'optName':'RMSprop', 'parameters':0.001},
+   'optimize':{'optName':'Adam', 'parameters':{'learning_rate': 0.001}},
    'callBacks':[{'callName':'EarlyStopping', 'monitor': 'loss', 'patience': 10}],
    'compilePara': {'loss':"mean_squared_error", 'metrics':[ 'mae', 'mse']},
    'epochs':2048,
-   'name': 'test2'
+   'name': 'test17',
+   'comment': 'Use standard & difference， use adam  w/ small learning rate, 2048 epochs, 256 data'
 }
 ]
 
