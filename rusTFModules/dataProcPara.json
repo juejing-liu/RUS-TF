@@ -1,1 +1,1 @@
-{"batchSize":32, "labelName": "Cp", "epochTime": 1, "trianRepeat": 32}
+{"batchSize":32, "labelName": "Cp", "epochTime": 8, "trianRepeat": 32}

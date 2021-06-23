@@ -25,11 +25,17 @@ def buildDropout(drop):
     layer = keras.layers.Dropout(drop)
     return layer
 
+def buildLayer(layerName, layerPara):
+    layer = getattr(keras.layers, layerName)
+    print(layerPara)
+    layer = layer(**layerPara)
+    return layer
+
 def buildOptimizer(optiPara):
     name = optiPara['optName']
     para = optiPara['parameters']
     optimizer = getattr(keras.optimizers, name)
-    optimizer = optimizer(**optiPara['parameters'])
+    optimizer = optimizer(**para)
     # if para != None:
     #     optimizer = optimizer(para)
     # else:
