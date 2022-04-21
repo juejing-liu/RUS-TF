@@ -2,7 +2,7 @@ import tensorflow as tf
 import tensorflow.keras as keras
 import pathlib
 import os
-import matplotlib as plt 
+# import matplotlib as plt 
 import pandas as pd 
 import numpy as np 
 
@@ -25,16 +25,27 @@ def buildDropout(drop):
     layer = keras.layers.Dropout(drop)
     return layer
 
+def buildLayer(layerName, layerPara):
+    layer = getattr(keras.layers, layerName)
+    print(layerPara)
+    layer = layer(**layerPara)
+    return layer
+
 def buildOptimizer(optiPara):
     name = optiPara['optName']
     para = optiPara['parameters']
     optimizer = getattr(keras.optimizers, name)
-    optimizer = optimizer(**optiPara['parameters'])
+    optimizer = optimizer(**para)
     # if para != None:
     #     optimizer = optimizer(para)
     # else:
     #     optimizer = optimizer()
     return optimizer
 
-# def buildModel():
+def buildCallback(callBackName, callBackPara):
+    name = callBackName
+    para = callBackPara
+    cb = getattr(tf.keras.callbacks,name)
+    cb = cb(**para)
+    return cb
 
