@@ -1310,5 +1310,7 @@ result/test2/saved_model.pb
 result/test2/variables/variables.data-00001-of-00002
 result/test2/variables/variables.data-00000-of-00002
 result/test2/saved_model.pb
-testresult/
-feagures/
+Droping.opj
+results.opj
+*.opj
+*.csv
