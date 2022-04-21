@@ -1310,7 +1310,10 @@ result/test2/saved_model.pb
 result/test2/variables/variables.data-00001-of-00002
 result/test2/variables/variables.data-00000-of-00002
 result/test2/saved_model.pb
-Droping.opj
-results.opj
-*.opj
-*.csv
+testresult/
+feagures/
+rusTFModules/__pycache__/modelFunc.cpython-38.pyc
+rusTFModules/__pycache__/rusPreprocess.cpython-38.pyc
+rusTFModules/__pycache__/saveFiles.cpython-38.pyc
+rusTFModules/__pycache__/saveFiles.cpython-38.pyc
+*.pyc
